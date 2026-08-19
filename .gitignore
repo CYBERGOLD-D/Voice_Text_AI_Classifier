@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.wav
+*.mp3
+*.pkl
+*.npy
+*.npz
+*.log
+*.tmp
