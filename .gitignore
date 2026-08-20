@@ -7,3 +7,9 @@ __pycache__/
 *.npz
 *.log
 *.tmp
+
+# Ignore datasets
+Datasets/
+data/
+*.csv
+*.txt
