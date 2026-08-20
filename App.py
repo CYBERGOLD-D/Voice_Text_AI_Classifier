@@ -6,21 +6,22 @@ import sounddevice as sd
 import tempfile
 import wave
 
-# --- Load saved models and vectorizer ---
-model = joblib.load("best_model.pkl")
-vectorizer = joblib.load("tfidf_vectorizer.pkl")  # text preprocessing pipeline
+# --- Load saved models ---
+audio_model = joblib.load("best_model.pkl")          # audio classifier
+text_model = joblib.load("text_model.pkl")           # text classifier
+vectorizer = joblib.load("tfidf_vectorizer.pkl")     # text preprocessing pipeline
 
 st.title("🎙 Audio & Text Command Classifier")
-st.write("Classify commands from text, uploaded audio, or spoken voice using the trained model.")
+st.write("Classify commands from text, uploaded audio, or spoken voice using the trained models.")
 
-# --- Text Command Input ---
+# --- Text Command Classification ---
 st.header("Text Command Classification")
 text_command = st.text_input("Enter a command (e.g., 'turn on the light')")
 
 if st.button("Classify Text"):
     if text_command.strip() != "":
         text_features = vectorizer.transform([text_command])
-        prediction = model.predict(text_features)[0]
+        prediction = text_model.predict(text_features)[0]
         st.success(f"Predicted Class for Text: {prediction}")
     else:
         st.warning("Please enter a command.")
@@ -36,7 +37,7 @@ if audio_file is not None:
         audio_features = np.mean(mfccs.T, axis=0).reshape(1, -1)
 
         if st.button("Classify Uploaded Audio"):
-            prediction = model.predict(audio_features)[0]
+            prediction = audio_model.predict(audio_features)[0]
             st.success(f"Predicted Class for Audio: {prediction}")
     except Exception as e:
         st.error(f"Error processing audio file: {e}")
@@ -64,7 +65,7 @@ if st.button("Record and Classify Voice"):
         mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=14)
         voice_features = np.mean(mfccs.T, axis=0).reshape(1, -1)
 
-        prediction = model.predict(voice_features)[0]
+        prediction = audio_model.predict(voice_features)[0]
         st.success(f"Predicted Class for Spoken Voice: {prediction}")
     except Exception as e:
         st.error(f"Error processing recorded voice: {e}")
