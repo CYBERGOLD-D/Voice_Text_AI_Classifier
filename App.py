@@ -7,9 +7,9 @@ import tempfile
 import wave
 
 # --- Load saved models ---
-audio_model = joblib.load("best_model.pkl")          # audio classifier
-text_model = joblib.load("text_model.pkl")           # text classifier
-vectorizer = joblib.load("tfidf_vectorizer.pkl")     # text preprocessing pipeline
+audio_model = joblib.load("best_model.pkl")              # audio classifier
+text_model = joblib.load("text_model.pkl")               # text classifier
+vectorizer = joblib.load("text_tfidf_vectorizer.pkl")    # text preprocessing pipeline
 
 st.title("🎙 Audio & Text Command Classifier")
 st.write("Classify commands from text, uploaded audio, or spoken voice using the trained models.")
@@ -36,6 +36,7 @@ if audio_file is not None:
         mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=14)
         audio_features = np.mean(mfccs.T, axis=0).reshape(1, -1)
 
+        # Button wrapped inside the block
         if st.button("Classify Uploaded Audio"):
             prediction = audio_model.predict(audio_features)[0]
             st.success(f"Predicted Class for Audio: {prediction}")
