@@ -1,103 +1,90 @@
-🎙 Voice/Text Command Classifier
-📌 Project Overview
-This project develops a machine learning system that recognizes and classifies both spoken audio commands and written text commands.
-The aim is to build a unified pipeline that interprets human instructions across modalities, enabling natural and flexible device interaction.
+# 🎙 Voice & Text Command Classifier  
+*Smart multimodal AI for text and audio commands*
 
-The system leverages:
+`https://copilot.microsoft.com/th/id/BCO.99a5f8ed-34b5-441c-b9a9-9fad355a8059.png`
 
-Text data (CSV commands) → processed with TF‑IDF vectorization
+`https://img.shields.io/badge/Python-3.9%2B-blue.svg`  
+`https://img.shields.io/badge/Streamlit-App-red.svg`  
+`https://img.shields.io/badge/License-MIT-green.svg`  
+`https://img.shields.io/badge/Status-Prototype-yellow.svg`
 
-Audio data (.wav commands) → processed with MFCC feature extraction via Librosa
+---
 
-Classification models (Logistic Regression, Random Forest, etc.) → trained to distinguish command categories
+## 📌 Overview
+This project is a **multimodal command classifier** that recognizes and classifies user commands from **text, uploaded audio files, or spoken voice recordings**. It uses **Random Forest models** trained on:
 
-By combining audio and text features, the classifier can:
+- **Text features**: TF‑IDF vectors (max_features=5000)  
+- **Audio features**: MFCCs (14 coefficients, averaged)
 
-Interpret commands whether spoken or typed
+The app is built with **Streamlit** for an interactive interface and supports smart‑home style actions (e.g., toggling lights, playing music).
 
-Deliver predictions with evaluation metrics (accuracy, confusion matrix, classification report)
+---
 
-Support deployment for real‑time inference (smart home control, voice assistants, accessibility tools)
+## 🚀 Features
+- ⌨️ **Text Classification**  
+- 📂 **Audio File Classification**  
+- 🎤 **Spoken Voice Classification**  
+- 📈 **Confidence Scores**  
+- 📝 **Command History**  
+- ⬇️ **Export to CSV**  
+- 🗑️ **Clear History**  
+- 📊 **Performance Dashboard**  
+- 📉 **Live Confusion Matrix**  
+- ℹ️ **Model Info Section**  
 
-📂 Repository Structure
-(to be expanded with folders and files)
+---
 
-🛠 Steps in the Notebook
-Load Data → Import text and audio datasets
-
-Preprocess Text → Tokenization + TF‑IDF vectorization
-
-Preprocess Audio → Extract MFCC features with Librosa
-
-Train Models → Logistic Regression, Random Forest
-
-Evaluate Models → Accuracy, confusion matrix, classification report
-
-Deploy → Streamlit app for real‑time inference
-
-📊 Training & Evaluation Results
-Dataset
-Training set: (38359, 14) features and (38359, 21) labels
-
-Testing set: (9590, 14) features and (9590, 21) labels
-
-Model Training
-✅ Logistic Regression trained successfully
-
-Samples: 38,359
-
-Features: 14
-
-✅ Random Forest trained successfully
-
-Samples: 38,359
-
-Features: 14
-
-Model Performance
-Logistic Regression
-
-Accuracy: 0.0461
-
-Classification report shows low precision/recall across categories
-
-Random Forest
-
-Accuracy: 0.0418
-
-Similar performance, slightly lower than Logistic Regression
-
-Summary
-🎉 All models trained successfully
-
-✅ Best model: Logistic Regression (saved as best_model.pkl)
-
-✅ Vectorizer retrained and saved (tfidf_vectorizer.pkl)
-
-🔮 Next Steps
-Extend with CNNs for audio spectrograms
-
-Fine‑tune BERT for text commands
-
-Build a fusion model combining both modalities
-
-Optimize hyperparameters with cross‑validation
-
-Add dual voice input: microphone capture + audio file upload
-
-🛠 Installation (Local)
-Clone the repository:
-
-
-git clone https://github.com/CYBERGODLD-D/Voice_Text_AI_Classifier.git
+## 🛠️ Installation
+```bash
+git clone https://github.com/yourusername/Voice_Text_AI_Classifier.git
 cd Voice_Text_AI_Classifier
-Install dependencies:
-
-
 pip install -r requirements.txt
-Run the Streamlit app:
+streamlit run App.py
+```
+
+---
+
+## 📂 Project Structure
+```
+Voice_Text_AI_Classifier/
+│── App.py                     # Streamlit app
+│── Audio_Text_CC_Full.ipynb   # Training & evaluation notebook
+│── datasets/                  # Raw and processed datasets
+│── text_model.pkl             # Saved Random Forest text model
+│── best_model.pkl             # Saved Random Forest audio model
+│── text_tfidf_vectorizer.pkl  # Saved TF-IDF vectorizer
+│── requirements.txt           # Dependencies
+│── README.md                  # Documentation
+```
+
+## ✅ Current Baseline
+- **Best Fit Model**: Random Forest (Text features)  
+- **Accuracy**: ~5% (baseline, close to random guessing across 21 classes)  
+- **Limitations**: Class imbalance and limited feature representation.  
+
+## 🔮 Future Work
+- Advanced audio features & transformer embeddings  
+- Non‑linear models (XGBoost, LightGBM, deep learning)  
+- Multimodal fusion (combine audio + text features)  
+- Stronger evaluation with k‑fold cross‑validation  
 
 
-streamlit run app.py
-👩‍💻 Author  
-Olorunosebi Dhikrat Motunrayo
+## 📸 Usage Examples
+- **Text Input**: `"turn on the light"` → `Turn on Light (Confidence: 0.82)`  
+- **Audio Upload**: `light_command.wav` → `Turn on Light (Confidence: 0.76)`  
+- **Voice Recording**: `"play music"` → `Play Music (Confidence: 0.80)`  
+
+
+## 👩‍💻 Author
+**Olorunosebi Dhikrat Motunrayo**
+---
+
+## 🧠 About
+**Voice & Text Command Classifier** is a smart multimodal AI system that understands both **spoken voice** and **written text** commands. Built with **Streamlit** and powered by **Random Forest models**, it classifies user inputs from audio or text into actionable categories — enabling intuitive, voice‑driven and text‑based control for smart environments.  
+
+Developed by **Olorunosebi Dhikrat Motunrayo**, this project blends **machine learning**, **signal processing**, and **natural language understanding** into one seamless interactive experience.
+
+---
+
+## 🧾 Tagline
+> “Empowering machines to understand both voice and text — one command at a time.”
