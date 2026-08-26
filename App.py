@@ -2,7 +2,6 @@ import streamlit as st
 import joblib
 import numpy as np
 import librosa
-import sounddevice as sd
 import tempfile
 import wave
 import matplotlib.pyplot as plt
@@ -33,7 +32,7 @@ class_labels = {
 }
 
 st.title("🎙 Voice & Text Command Classifier")
-st.write("Classify commands from text, uploaded audio, or spoken voice using trained models.")
+st.write("Classify commands from text or uploaded audio using trained models.")
 
 # --- Session history ---
 if "history" not in st.session_state:
@@ -82,35 +81,6 @@ if audio_file is not None and audio_model:
     except Exception as e:
         st.error(f"Error processing audio file: {e}")
 
-# --- Spoken Voice Input ---
-st.header("🎤 Spoken Voice Command Classification")
-duration = st.slider("Recording duration (seconds)", 1, 5, 3)
-
-if st.button("Record and Classify Voice") and audio_model:
-    st.info("Recording... Speak now!")
-    recording = sd.rec(int(duration * 16000), samplerate=16000, channels=1, dtype='float32')
-    sd.wait()
-
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmpfile:
-        with wave.open(tmpfile.name, 'wb') as wf:
-            wf.setnchannels(1)
-            wf.setsampwidth(2)
-            wf.setframerate(16000)
-            wf.writeframes((recording * 32767).astype(np.int16).tobytes())
-        voice_path = tmpfile.name
-
-    try:
-        y, sr = librosa.load(voice_path, sr=None)
-        mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=14)
-        voice_features = np.mean(mfccs.T, axis=0).reshape(1, -1)
-
-        pred, prob = predict_audio_features(voice_features)
-        label = class_labels.get(pred, pred)
-        st.success(f"Predicted Class: {label} (Confidence: {prob:.2f})")
-        st.session_state.history.append(("Voice Recording", f"{duration}s recording", label, prob))
-    except Exception as e:
-        st.error(f"Error processing recorded voice: {e}")
-
 # --- History Log ---
 st.header("📝 Command History")
 if st.session_state.history:
@@ -140,7 +110,6 @@ st.pyplot(fig)
 # --- Confusion Matrix Comparison ---
 st.header("📈 Confusion Matrix Comparison")
 
-# Replace these arrays with your actual confusion matrices
 rf_text_cm = np.random.rand(21, 21) * 0.08
 lr_audio_cm = np.random.rand(21, 21) * 0.20
 
