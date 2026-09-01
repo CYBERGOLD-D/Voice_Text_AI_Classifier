@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Virtual environment
 .venv/
 *.venv
@@ -12,17 +13,30 @@ __pycache__/
 *.mp3
 
 # Model and data artifacts
+=======
+.venv/
+__pycache__/
+*.wav
+*.mp3
+>>>>>>> 9e78524c2aa087dcc613f6339d6825fa6f381d84
 *.pkl
 *.npy
 *.npz
 *.log
 *.tmp
 
+<<<<<<< HEAD
 # Datasets
+=======
+# Ignore datasets
+>>>>>>> 9e78524c2aa087dcc613f6339d6825fa6f381d84
 Datasets/
 data/
 *.csv
 *.txt
 
+<<<<<<< HEAD
 # Jupyter notebook checkpoints
 .ipynb_checkpoints/
+=======
+>>>>>>> 9e78524c2aa087dcc613f6339d6825fa6f381d84
