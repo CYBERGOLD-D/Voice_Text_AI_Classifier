@@ -35,22 +35,9 @@ if "history" not in st.session_state:
 if "feedback" not in st.session_state:
     st.session_state.feedback = []
 
-# --- Helper functions ---
-def predict_text(command):
-    features = vectorizer.transform([command])
-    pred = text_model.predict(features)[0]
-    prob = text_model.predict_proba(features).max()
-    return pred, prob
-
-def predict_audio_features(features):
-    pred = audio_model.predict(features)[0]
-    prob = audio_model.predict_proba(features).max()
-    return pred, prob
-
 # --- App Layout ---
 st.title("🎙 Voice & Text Command Classifier")
 
-# Quick Start Guide
 st.markdown("""
 ## 🚀 Quick Start Guide
 1. ✍️ Type a command or pick a sample.
@@ -60,99 +47,98 @@ st.markdown("""
 5. ⬇️ Download your history as CSV.
 """)
 
-# Tabs for navigation
-tab1, tab2, tab3, tab4, tab5 = st.tabs(["⌨️ Text", "📂 Audio", "📝 History", "📊 Dashboard", "ℹ️ Info"])
+# --- Toggle for advanced visualizations ---
+show_advanced = st.checkbox("Show advanced visualizations (probability charts & feature importance)", value=True)
 
-with tab1:
-    st.header("Text Command Classification")
+# --- Side-by-side layout for Text and Audio ---
+st.header("🔀 Text & Audio Classification Side-by-Side")
+col1, col2 = st.columns(2)
+
+with col1:
+    st.subheader("⌨️ Text Command Classification")
     sample = st.selectbox("Try a sample:", ["Turn on Light", "Turn off Light", "Play Music", "Stop Music"])
     text_command = st.text_input("Enter a command", value=sample)
 
     if st.button("Classify Text") and text_model and vectorizer:
         if text_command.strip():
-            pred, prob = predict_text(text_command)
+            features = vectorizer.transform([text_command])
+            pred = text_model.predict(features)[0]
+            probs = text_model.predict_proba(features)[0]
             label = class_labels.get(pred, pred)
+
             st.success(f"Predicted Class: {label}")
-            st.progress(int(prob * 100))
-            st.session_state.history.append(("Text", text_command, label, prob))
-            if st.button("👍 Correct"):
-                st.session_state.feedback.append(("Text", text_command, "Correct"))
-            if st.button("👎 Incorrect"):
-                st.session_state.feedback.append(("Text", text_command, "Incorrect"))
+            st.progress(int(probs.max() * 100))
+
+            if show_advanced:
+                # Probability distribution chart
+                fig, ax = plt.subplots()
+                ax.bar(range(len(probs)), probs, color="skyblue")
+                ax.set_xticks(range(len(probs)))
+                ax.set_xticklabels([class_labels.get(i, str(i)) for i in range(len(probs))], rotation=45, ha="right")
+                ax.set_ylabel("Probability")
+                ax.set_title("Probability Distribution")
+                st.pyplot(fig)
+
+                # Download probability distribution
+                df_probs = pd.DataFrame([probs], columns=[class_labels.get(i, str(i)) for i in range(len(probs))])
+                csv_probs = df_probs.to_csv(index=False).encode("utf-8")
+                st.download_button("⬇️ Download Probability Distribution (CSV)", csv_probs, "text_probabilities.csv", "text/csv")
+
+                # Feature importance visualization (top words)
+                if hasattr(text_model, "feature_importances_"):
+                    importances = text_model.feature_importances_
+                    indices = np.argsort(importances)[-10:]  # top 10 words
+                    top_words = [vectorizer.get_feature_names_out()[i] for i in indices]
+                    top_importances = importances[indices]
+
+                    fig_imp, ax_imp = plt.subplots()
+                    ax_imp.barh(top_words, top_importances, color="green")
+                    ax_imp.set_title("Top Words Driving Prediction")
+                    st.pyplot(fig_imp)
+
+            st.session_state.history.append(("Text", text_command, label, probs.max()))
         else:
             st.warning("Please enter a command.")
 
-with tab2:
-    st.header("Audio Command Classification")
+with col2:
+    st.subheader("📂 Audio Command Classification")
     audio_file = st.file_uploader("Upload an audio file", type=["wav", "mp3", "ogg", "flac", "m4a"])
 
     if audio_file is not None and audio_model:
-        try:
-            y, sr = librosa.load(audio_file, sr=None)
-            mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=14)
-            audio_features = np.mean(mfccs.T, axis=0).reshape(1, -1)
+        y, sr = librosa.load(audio_file, sr=None)
+        mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=14)
+        audio_features = np.mean(mfccs.T, axis=0).reshape(1, -1)
 
-            # Show waveform
-            st.subheader("🔊 Audio Waveform")
-            fig_wave, ax_wave = plt.subplots()
-            librosa.display.waveshow(y, sr=sr, ax=ax_wave)
-            st.pyplot(fig_wave)
+        if st.button("🎯 Classify Audio"):
+            pred = audio_model.predict(audio_features)[0]
+            probs = audio_model.predict_proba(audio_features)[0]
+            label = class_labels.get(pred, pred)
 
-            # Show spectrogram
-            st.subheader("🌈 Spectrogram")
-            fig_spec, ax_spec = plt.subplots()
-            S = librosa.feature.melspectrogram(y=y, sr=sr)
-            S_dB = librosa.power_to_db(S, ref=np.max)
-            img = librosa.display.specshow(S_dB, sr=sr, x_axis='time', y_axis='mel', ax=ax_spec)
-            fig_spec.colorbar(img, ax=ax_spec, format="%+2.f dB")
-            st.pyplot(fig_spec)
+            st.success(f"Predicted Class: {label}")
+            st.progress(int(probs.max() * 100))
 
-            if st.button("Classify Audio"):
-                pred, prob = predict_audio_features(audio_features)
-                label = class_labels.get(pred, pred)
-                st.success(f"Predicted Class: {label}")
-                st.progress(int(prob * 100))
-                st.session_state.history.append(("Audio", audio_file.name, label, prob))
-                if st.button("👍 Correct"):
-                    st.session_state.feedback.append(("Audio", audio_file.name, "Correct"))
-                if st.button("👎 Incorrect"):
-                    st.session_state.feedback.append(("Audio", audio_file.name, "Incorrect"))
-        except Exception as e:
-            st.error(f"Error processing audio file: {e}")
+            if show_advanced:
+                # Probability distribution chart
+                fig, ax = plt.subplots()
+                ax.bar(range(len(probs)), probs, color="lightcoral")
+                ax.set_xticks(range(len(probs)))
+                ax.set_xticklabels([class_labels.get(i, str(i)) for i in range(len(probs))], rotation=45, ha="right")
+                ax.set_ylabel("Probability")
+                ax.set_title("Probability Distribution")
+                st.pyplot(fig)
 
-with tab3:
-    st.header("Command History")
-    if st.session_state.history:
-        df_history = pd.DataFrame(st.session_state.history, columns=["Type", "Input", "Prediction", "Confidence"])
-        st.dataframe(df_history)
-        csv = df_history.to_csv(index=False).encode("utf-8")
-        st.download_button("⬇️ Download History", csv, "command_history.csv", "text/csv")
-        if st.button("🗑️ Clear History"):
-            st.session_state.history = []
-            st.success("History cleared!")
-    else:
-        st.write("No commands classified yet.")
+                # Download probability distribution
+                df_probs = pd.DataFrame([probs], columns=[class_labels.get(i, str(i)) for i in range(len(probs))])
+                csv_probs = df_probs.to_csv(index=False).encode("utf-8")
+                st.download_button("⬇️ Download Probability Distribution (CSV)", csv_probs, "audio_probabilities.csv", "text/csv")
 
-    st.subheader("User Feedback")
-    if st.session_state.feedback:
-        df_feedback = pd.DataFrame(st.session_state.feedback, columns=["Type", "Input", "Feedback"])
-        st.dataframe(df_feedback)
+                # Feature importance visualization (MFCCs)
+                st.subheader("Top MFCC Features Driving Prediction")
+                fig_mfcc, ax_mfcc = plt.subplots()
+                ax_mfcc.bar(range(1, len(audio_features[0]) + 1), audio_features[0], color="purple")
+                ax_mfcc.set_xlabel("MFCC Coefficient")
+                ax_mfcc.set_ylabel("Value")
+                ax_mfcc.set_title("MFCC Feature Contributions")
+                st.pyplot(fig_mfcc)
 
-with tab4:
-    st.header("Model Performance Dashboard")
-    models = ["Logistic Regression (Audio)", "Random Forest (Text)"]
-    accuracies = [0.0468, 0.0489]
-    fig, ax = plt.subplots()
-    ax.bar(models, accuracies, color=["skyblue", "lightgreen"])
-    ax.set_title("Model Accuracy Comparison")
-    ax.set_ylabel("Accuracy")
-    st.pyplot(fig)
-
-with tab5:
-    st.header("Model Information")
-    st.write("**Text Model:** Random Forest Classifier")
-    st.write("- n_estimators=300, max_depth=50, class_weight='balanced'")
-    st.write("- Trained on TF-IDF features (max_features=5000)")
-    st.write("**Audio Model:** Logistic Regression Classifier")
-    st.write("- C=0.1, solver='saga', class_weight='balanced', max_iter=1000")
-    st.write("- Trained on MFCC features (14 coefficients, averaged)")
+            st.session_state.history.append(("Audio", audio_file.name, label, probs.max()))
