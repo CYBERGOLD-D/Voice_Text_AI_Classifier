@@ -1,0 +1,28 @@
+# Virtual environment
+.venv/
+*.venv
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Audio files
+*.wav
+*.mp3
+
+# Model and data artifacts
+*.pkl
+*.npy
+*.npz
+*.log
+*.tmp
+
+# Datasets
+Datasets/
+data/
+*.csv
+*.txt
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
