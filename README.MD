@@ -1,102 +1,81 @@
-# 🎙 Voice & Text Command Classifier  
-*Smart multimodal AI for text and audio commands*
+# Voice & Text AI Classifier 🎙
 
-![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)  
-![Streamlit](https://img.shields.io/badge/Streamlit-App-red.svg)  
-![License](https://img.shields.io/badge/License-MIT-green.svg)  
-![Status](https://img.shields.io/badge/Status-Prototype-yellow.svg)
+A Streamlit app for classifying voice and text commands.
 
----
+🚀 **Live Demo:** [Click here to try the app](https://blank-app-02sn2ozbwg26.streamlit.app)
 
-## 📌 Overview
-This project is a **multimodal command classifier** that recognizes and classifies user commands from **text, uploaded audio files, or spoken voice recordings**.  
-
-It uses **Random Forest models** trained on:
-- **Text features**: TF‑IDF vectors (max_features=5000)  
-- **Audio features**: MFCCs (14 coefficients, averaged)
-
-The app is built with **Streamlit** for an interactive interface and supports smart‑home style actions (e.g., toggling lights, playing music).
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://blank-app-02sn2ozbwg26.streamlit.app)
 
 ---
 
-## 🚀 Features
-- ⌨️ Text Classification  
-- 📂 Audio File Classification  
-- 🎤 Spoken Voice Classification  
-- 📈 Confidence Scores  
-- 📝 Command History with CSV export  
-- 🗑️ Clear History option  
-- 📊 Performance Dashboard  
-- 📉 Live Confusion Matrix  
-- ℹ️ Model Info Section  
+## ✨ Features
+- ⌨️ **Text Command Classification**  
+- 🎵 **Audio Command Classification**  
+- 👍👎 **Feedback Logging**  
+- 📊 **Confidence Insights & Visualizations**  
 
 ---
 
-## 🛠️ Installation
-```bash
-git clone https://github.com/CYBERGOLD-D/Voice_Text_AI_Classifier.git
-cd Voice_Text_AI_Classifier
-python -m venv .venv
-.venv\Scripts\activate   # Windows
-pip install -r requirements.txt
-streamlit run App.py
+## 🛠 Requirements
+Create a `requirements.txt` with the following dependencies:
+
+```
+streamlit
+joblib
+numpy
+librosa
+matplotlib
+seaborn
+pandas
+scikit-learn
 ```
 
 ---
 
-## 📂 Project Structure
+## 📦 Installation & Usage
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/CYBERGOLD-D/Voice_Text_AI_Classifier.git
+   cd Voice_Text_AI_Classifier
+   ```
+
+2. Create and activate a virtual environment:
+   ```bash
+   python -m venv .venv
+   .venv\Scripts\activate   # On Windows
+   source .venv/bin/activate # On macOS/Linux
+   ```
+
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Run the app:
+   ```bash
+   streamlit run App.py
+   ```
+
+5. Open the local URL (usually `http://localhost:8501`) in your browser.
+
+---
+
+## 🌐 Deployment
+- Push your repo to GitHub.  
+- Deploy on [Streamlit Cloud](https://streamlit.io/cloud).  
+- Set `App.py` as the entry point.  
+- Ensure `requirements.txt` is included.  
+
+---
+
+## 👨‍💻 Author
+Developed by **Olorunosebi Dhikrat Motunrayo**  
+Location: Abuja, Nigeria  
+
+---
+
+## 📜 License
+Licensed under **3MTT**.
 ```
-Voice_Text_AI_Classifier/
-│── App.py                     # Streamlit app
-│── Audio_Text_CC_Full.ipynb   # Training & evaluation notebook
-│── datasets/                  # Raw and processed datasets
-│── text_model.pkl             # Saved Random Forest text model
-│── best_model.pkl             # Saved Random Forest audio model
-│── text_tfidf_vectorizer.pkl  # Saved TF-IDF vectorizer
-│── requirements.txt           # Dependencies
-│── README.md                  # Documentation
-```
-
----
-
-## ✅ Current Baseline
-- **Best Fit Model**: Random Forest (Text features)  
-- **Accuracy**: ~5% (baseline, close to random guessing across 21 classes)  
-- **Limitations**: Class imbalance and limited feature representation  
-
----
-
-## 🔮 Future Work
-- Advanced audio features & transformer embeddings  
-- Non‑linear models (XGBoost, LightGBM, deep learning)  
-- Multimodal fusion (combine audio + text features)  
-- Stronger evaluation with k‑fold cross‑validation  
-
----
-
-## 📸 Usage Examples
-- **Text Input**: `"turn on the light"` → `Turn on Light (Confidence: 0.82)`  
-- **Audio Upload**: `light_command.wav` → `Turn on Light (Confidence: 0.76)`  
-- **Voice Recording**: `"play music"` → `Play Music (Confidence: 0.80)`  
-
----
-
-## 👩‍💻 Author
-**Olorunosebi Dhikrat Motunrayo**  
-📍 Abuja, Nigeria  
-
----
-
-## 🧠 About
-**Voice & Text Command Classifier** is a smart multimodal AI system that understands both **spoken voice** and **written text** commands. Built with **Streamlit** and powered by **Random Forest models**, it classifies user inputs from audio or text into actionable categories — enabling intuitive, voice‑driven and text‑based control for smart environments.  
-
-Developed by **Olorunosebi Dhikrat Motunrayo**, this project blends **machine learning**, **signal processing**, and **natural language understanding** into one seamless interactive experience.
-
----
-
-## 🧾 Tagline
-> “Empowering machines to understand both voice and text — one command at a time.”
-```
-
----
 

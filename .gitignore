@@ -23,3 +23,5 @@ Datasets/
 data/
 *.txt
 .ipynb_checkpoints/
+.vscode/
+
